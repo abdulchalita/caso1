@@ -1,0 +1,9 @@
+FROM mongo:latest
+
+# Copia tu script bash
+COPY init-replica.sh /init-replica.sh
+
+# Hace que el script sea ejecutable
+RUN chmod +x /init-replica.sh
+
+CMD [ "bash", "-c", "/init-replica.sh & exec mongod --replSet replica01" ]

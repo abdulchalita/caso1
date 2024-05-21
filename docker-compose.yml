@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  app:
+    # image: osmarch/paqueterias:tag2
+    build: .
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis02
+      - mongo01
+      - mongo02
+      - mongo03
+      - mongo-init-replica
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - red02
+
+  redis02:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - red02
+
+  mongo01:
+    image: mongo:latest
+    command: [ "mongod", "--replSet", "replica01" ]
+    ports:
+      - 27020:27017
+    networks:
+      - red02
+
+  mongo02:
+    image: mongo:latest
+    command: [ "mongod", "--replSet", "replica01" ]
+    ports:
+      - "27021:27017"
+    networks:
+      - red02
+
+  mongo03:
+    image: mongo:latest
+    command: [ "mongod", "--replSet", "replica01" ]
+    ports:
+      - "27022:27017"
+    networks:
+      - red02
+
+  mongo-init-replica:
+    # image: osmarch/paqueterias:tag1
+    build: 
+      context: .
+    depends_on:
+      - mongo01
+      - mongo02
+      - mongo03
+    networks:
+      - red02
+
+networks:
+  red02:
